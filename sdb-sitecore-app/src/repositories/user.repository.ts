@@ -2,7 +2,7 @@ import { AppDataSource } from '@/lib/data-source';
 import { Users } from '@/entities/Users';
 
 export class UserRepository {
-  private repo = AppDataSource.getRepository(Users);
+  private readonly repo = AppDataSource.getRepository(Users);
 
   findTop(limit = 10) {
     return this.repo.find({ take: limit });
