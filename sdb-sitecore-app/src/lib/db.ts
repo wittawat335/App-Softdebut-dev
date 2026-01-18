@@ -1,4 +1,4 @@
-import { AppDataSource } from './data-source';
+import { AppDataSource } from "./data-source";
 
 let dataSourcePromise: Promise<void> | null = null;
 
@@ -6,10 +6,8 @@ export async function initDB() {
   if (!AppDataSource.isInitialized) {
     if (!dataSourcePromise) {
       dataSourcePromise = AppDataSource.initialize()
-        .then(() => {
-          console.log('✅ DB connected');
-        })
-        .catch(err => {
+        .then(() => {})
+        .catch((err) => {
           dataSourcePromise = null;
           throw err;
         });
