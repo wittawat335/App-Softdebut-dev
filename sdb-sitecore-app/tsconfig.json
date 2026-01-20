@@ -29,7 +29,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "strictFunctionTypes": false,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": false, // ใช้เฉพาะตอน poc ตอนทำจริงต้องเอาออก
     "module": "esnext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
