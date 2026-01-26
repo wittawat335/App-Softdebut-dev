@@ -18,6 +18,13 @@ import * as HelloSitecore from 'src/components/hello-sitecore/HelloSitecore';
 import * as ContentBlock from 'src/components/content-block/ContentBlock';
 import * as Container from 'src/components/container/Container';
 import * as ColumnSplitter from 'src/components/column-splitter/ColumnSplitter';
+import * as BossWidgetRichtext from 'src/components/boss-widget/BossWidgetRichtext';
+import * as Simple from 'src/components/boss-widget/save/Simple';
+import * as Header from 'src/components/boss-widget/save/Header';
+import * as BlockBannerBossidiot007 from 'src/components/boss-widget/save/BlockBannerBossidiot007';
+import * as BlockContainerBoss from 'src/components/boss-widget/content-blocks/BlockContainerBoss';
+import * as BlockBannerBoss2 from 'src/components/boss-widget/content-blocks/BlockBannerBoss2';
+import * as BlockBannerBoss from 'src/components/boss-widget/content-blocks/BlockBannerBoss';
 
 export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['BYOCWrapper', BYOCServerWrapper],
@@ -37,6 +44,13 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['ContentBlock', { ...ContentBlock }],
   ['Container', { ...Container }],
   ['ColumnSplitter', { ...ColumnSplitter }],
+  ['BossWidgetRichtext', { ...BossWidgetRichtext }],
+  ['Simple', { ...Simple }],
+  ['Header', { ...Header }],
+  ['BlockBannerBossidiot007', { ...BlockBannerBossidiot007 }],
+  ['BlockContainerBoss', { ...BlockContainerBoss }],
+  ['BlockBannerBoss2', { ...BlockBannerBoss2 }],
+  ['BlockBannerBoss', { ...BlockBannerBoss }],
 ]);
 
 export default componentMap;
