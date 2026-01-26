@@ -11,6 +11,8 @@ import components from ".sitecore/component-map.client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
+import { LoadingProvider } from "@/contexts/LoadingContext";
+
 export default function Providers({
   children,
   page,
@@ -24,16 +26,19 @@ export default function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SitecoreProvider
-        api={scConfig.api}
-        componentMap={components}
-        page={page}
-        loadImportMap={() => import(".sitecore/import-map.client")}
-      >
-        <ComponentPropsContext value={componentProps}>
-          {children}
-        </ComponentPropsContext>
-      </SitecoreProvider>
+      <LoadingProvider>
+        {" "}
+        <SitecoreProvider
+          api={scConfig.api}
+          componentMap={components}
+          page={page}
+          loadImportMap={() => import(".sitecore/import-map.client")}
+        >
+          <ComponentPropsContext value={componentProps}>
+            {children}
+          </ComponentPropsContext>
+        </SitecoreProvider>
+      </LoadingProvider>
 
       {process.env.NODE_ENV === "development" && (
         <ReactQueryDevtools initialIsOpen={false} />
