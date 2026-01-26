@@ -48,7 +48,6 @@ const Layout = ({ page }: LayoutProps): JSX.Element => {
                   />
                 )}
               </div>
-              welcome to sdb-poc
             </header>
             <main>
               <div id="content">
