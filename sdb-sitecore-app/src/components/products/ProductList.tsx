@@ -1,23 +1,13 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Products } from "@/entities/Products";
-import { useTranslations } from "next-intl";
+import React from "react";
+import { useProducts } from "@/hooks/useProducts";
 
 const ProductList = (props: any) => {
-  const [products, setProducts] = useState<Products[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: products = [], isLoading, isError } = useProducts();
 
-  useEffect(() => {
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch((err) => console.error(err));
-  }, []);
-
-  if (loading) return <div className="p-4">Loading Catalog...</div>;
+  if (isLoading) return <div className="p-4">Loading Catalog...</div>;
+  if (isError)
+    return <div className="p-4 text-red-500">Error loading products.</div>;
 
   return (
     <div className="component product-list p-4">

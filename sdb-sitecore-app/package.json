@@ -26,6 +26,8 @@
     "@sitecore-cloudsdk/personalize": "^0.6.1",
     "@sitecore-content-sdk/nextjs": "^1.0.0",
     "@sitecore-feaas/clientside": "^0.6.4",
+    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-query-devtools": "^5.91.2",
     "mssql": "^12.2.0",
     "next": "^15.5.0",
     "next-intl": "^4.3.5",

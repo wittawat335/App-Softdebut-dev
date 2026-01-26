@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   ComponentPropsCollection,
   ComponentPropsContext,
@@ -8,6 +8,8 @@ import {
 } from "@sitecore-content-sdk/nextjs";
 import scConfig from "sitecore.config";
 import components from ".sitecore/component-map.client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export default function Providers({
   children,
@@ -18,16 +20,24 @@ export default function Providers({
   page: Page;
   componentProps?: ComponentPropsCollection;
 }) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
-    <SitecoreProvider
-      api={scConfig.api}
-      componentMap={components}
-      page={page}
-      loadImportMap={() => import(".sitecore/import-map.client")}
-    >
-      <ComponentPropsContext value={componentProps}>
-        {children}
-      </ComponentPropsContext>
-    </SitecoreProvider>
+    <QueryClientProvider client={queryClient}>
+      <SitecoreProvider
+        api={scConfig.api}
+        componentMap={components}
+        page={page}
+        loadImportMap={() => import(".sitecore/import-map.client")}
+      >
+        <ComponentPropsContext value={componentProps}>
+          {children}
+        </ComponentPropsContext>
+      </SitecoreProvider>
+
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
+    </QueryClientProvider>
   );
 }
