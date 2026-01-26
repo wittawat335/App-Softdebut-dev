@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
 import { useProducts } from "@/hooks/useProducts";
+import { Spinner } from "@/ui/Spinner";
 
 const ProductList = (props: any) => {
   const { data: products = [], isLoading, isError } = useProducts();
 
-  if (isLoading) return <div className="p-4">Loading Catalog...</div>;
+  if (isLoading) return <Spinner />;
   if (isError)
     return <div className="p-4 text-red-500">Error loading products.</div>;
 
