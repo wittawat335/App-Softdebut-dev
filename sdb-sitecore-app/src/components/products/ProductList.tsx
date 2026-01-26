@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Products } from "@/entities/Products";
+import { useTranslations } from "next-intl";
 
 const ProductList = (props: any) => {
   const [products, setProducts] = useState<Products[]>([]);
