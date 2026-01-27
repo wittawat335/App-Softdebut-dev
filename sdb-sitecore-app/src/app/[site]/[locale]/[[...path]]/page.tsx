@@ -11,6 +11,7 @@ import components from ".sitecore/component-map";
 import Providers from "src/Providers";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
+import SiteInfoWidget from "components/test-graphql/SiteInfoWidget";
 
 type PageProps = {
   params: Promise<{
@@ -57,6 +58,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   return (
     <NextIntlClientProvider>
       <Providers page={page} componentProps={componentProps}>
+        <SiteInfoWidget siteName={site} />
         <Layout page={page} />
       </Providers>
     </NextIntlClientProvider>
