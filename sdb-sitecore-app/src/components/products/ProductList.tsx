@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useProducts } from "@/hooks/useProducts";
-import { Spinner } from "@/ui/Spinner";
+import Spinner from "@/ui/Spinner";
 
 const ProductList = (props: any) => {
   const { data: products = [], isLoading, isError } = useProducts();
