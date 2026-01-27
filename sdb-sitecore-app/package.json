@@ -23,7 +23,7 @@
   "dependencies": {
     "@sitecore-cloudsdk/core": "^0.5.4",
     "@sitecore-cloudsdk/events": "^0.5.4",
-    "@sitecore-cloudsdk/personalize": "^0.6.1",
+    "@sitecore-cloudsdk/personalize": "^0.5.1",
     "@sitecore-content-sdk/nextjs": "^1.0.0",
     "@sitecore-feaas/clientside": "^0.6.4",
     "@tanstack/react-query": "^5.90.20",
@@ -35,12 +35,14 @@
     "react-dom": "^19.1.0",
     "reflect-metadata": "^0.2.2",
     "rsc-env": "0.0.2",
-    "tailwind-bootstrap-grid": "^6.0.0"
+    "tailwind-bootstrap-grid": "^6.0.0",
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@sitecore-content-sdk/cli": "^1.0.0",
     "@tailwindcss/postcss": "^4",
+    "@types/mssql": "^9.1.9",
     "@types/node": "^22.15.14",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
@@ -49,8 +51,7 @@
     "eslint-config-next": "15.5.0",
     "npm-run-all2": "^8.0.4",
     "tailwindcss": "^4",
-    "ts-node": "^1.7.1",
-    "typeorm": "^0.3.1",
+    "ts-node": "^10.9.2",
     "typescript": "~5.8.3"
   },
   "scripts": {
