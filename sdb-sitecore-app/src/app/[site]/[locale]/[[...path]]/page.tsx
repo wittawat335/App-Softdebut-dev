@@ -27,7 +27,11 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { site, locale, path } = await params;
   const draft = await draftMode();
 
-  // Set site and locale to be available in src/i18n/request.ts for fetching the dictionary
+  // -------------------------------------------------------------------------
+  // [Adjusted]: แจ้ง next-intl ว่าหน้านี้กำลังทำงานด้วยภาษาอะไร
+  // ใช้รูปแบบ "${site}_${locale}" เพื่อให้สอดคล้องกับ logic ใน src/i18n/request.ts
+  // สิ่งนี้จำเป็นสำหรับการเปิดใช้ Static Rendering และป้องกัน error "Dynamic usage of locale"
+  // -------------------------------------------------------------------------
   setRequestLocale(`${site}_${locale}`);
 
   // Fetch the page data from Sitecore
@@ -40,6 +44,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       page = await client.getPreview(editingParams);
     }
   } else {
+    // ดึงข้อมูลหน้าเว็บตามภาษา (locale) และ site ที่ระบุ
     page = await client.getPage(path ?? [], { site, locale });
   }
 
@@ -48,7 +53,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  // Fetch the component data from Sitecore (Likely will be deprecated)
+  // Fetch the component data from Sitecore
   const componentProps = await client.getComponentData(
     page.layout,
     {},
@@ -56,21 +61,23 @@ export default async function Page({ params, searchParams }: PageProps) {
   );
 
   return (
+    // [Adjusted]: หุ้มด้วย NextIntlClientProvider เพื่อให้ Client Components ใช้งาน useTranslations ได้
     <NextIntlClientProvider>
       <Providers page={page} componentProps={componentProps}>
-        <SiteInfoWidget siteName={site} />
+        {/* Widget สำหรับแสดงข้อมูล Site ปัจจุบัน (Optional) */}
         <Layout page={page} />
       </Providers>
     </NextIntlClientProvider>
   );
 }
 
-// This function gets called at build and export time to determine
-// pages for SSG ("paths", as tokenized array).
+// -------------------------------------------------------------------------
+// [Adjusted]: ฟังก์ชันสร้าง Static Paths (SSG) ตอน Build Time
+// -------------------------------------------------------------------------
 export const generateStaticParams = async () => {
+  // ตรวจสอบว่าเป็นโหมด Production และ config อนุญาตให้ทำ SSG หรือไม่
   if (process.env.NODE_ENV !== "development" && scConfig.generateStaticPaths) {
-    // Filter sites to only include the sites this starter is designed to serve.
-    // This prevents cross-site build errors when multiple starters share the same XM Cloud instance.
+    // กรอง Site ที่อนุญาตให้ทำงาน
     const defaultSite = scConfig.defaultSite;
     const allowedSites = defaultSite
       ? sites
@@ -78,6 +85,8 @@ export const generateStaticParams = async () => {
           .map((site: SiteInfo) => site.name)
       : sites.map((site: SiteInfo) => site.name);
 
+    // [Important]: ดึง Path ทั้งหมดจาก Sitecore สำหรับ "ทุกภาษา" ที่เรากำหนดใน routing.ts
+    // routing.locales.slice() จะส่งค่า ['en', 'th'] (หรือภาษาอื่นๆ ที่ตั้งไว้) ไปให้ SDK
     return await client.getAppRouterStaticParams(
       allowedSites,
       routing.locales.slice()
@@ -90,7 +99,8 @@ export const generateStaticParams = async () => {
 export const generateMetadata = async ({ params }: PageProps) => {
   const { path, site, locale } = await params;
 
-  // The same call as for rendering the page. Should be cached by default react behavior
+  // ดึงข้อมูล Page เพื่อมาทำ Metadata (Title, Description)
+  // Next.js จะ Cache Request นี้ให้อัตโนมัติ ไม่ต้องห่วงเรื่อง Performance
   const page = await client.getPage(path ?? [], { site, locale });
   return {
     title:
