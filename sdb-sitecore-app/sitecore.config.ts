@@ -7,7 +7,7 @@ import { defineConfig } from "@sitecore-content-sdk/nextjs/config";
 export default defineConfig({
   defaultLanguage: "en", // กำหนดภาษาหลักที่นี่
   multisite: {
-    defaultSite: "sdb-sitecore-app", // ชื่อ Site ของคุณใน Sitecore
+    defaultSite: "sdb-poc", // ชื่อ Site ของคุณใน Sitecore
   },
   // ใส่ค่าอื่นๆ ที่จำเป็นสำหรับ XM Cloud เช่น siteName, edge api host เป็นต้น
 });

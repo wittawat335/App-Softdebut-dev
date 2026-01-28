@@ -1,4 +1,6 @@
+// src/middleware.ts
 import { type NextRequest, type NextFetchEvent } from "next/server";
+import createIntlMiddleware from "next-intl/middleware"; // เพิ่มการ import นี้
 import {
   defineMiddleware,
   AppRouterMultisiteMiddleware,
@@ -10,29 +12,19 @@ import sites from ".sitecore/sites.json";
 import scConfig from "sitecore.config";
 import { routing } from "./i18n/routing";
 
-// --- 1. ตั้งค่า Sitecore Middlewares ---
+// 1. สร้าง next-intl middleware จากการตั้งค่าใน routing.ts
+const intlMiddleware = createIntlMiddleware(routing);
 
+// 2. ตั้งค่า Sitecore Middlewares
 const locale = new LocaleMiddleware({
-  /**
-   * รายชื่อ Site ทั้งหมดจาก sites.json
-   */
   sites,
-  /**
-   * รายชื่อภาษาที่รองรับ โดยดึงมาจาก src/i18n/routing.ts
-   * ปัจจุบันคือ ['en', 'th']
-   */
   locales: routing.locales.slice(),
-  /**
-   * ตั้งค่าเป็น false เพื่อให้ Middleware ทำงานเสมอ
-   * เพื่อจัดการเรื่องการเติม Prefix ภาษาใน URL
-   */
+  // เชื่อมต่อ intlMiddleware เข้ากับ Sitecore LocaleMiddleware
+  intlMiddleware,
   skip: () => false,
 });
 
 const multisite = new AppRouterMultisiteMiddleware({
-  /**
-   * รายชื่อ Site สำหรับระบุว่า URL นี้เป็นของ Site ไหน
-   */
   sites,
   ...scConfig.api.edge,
   ...scConfig.multisite,
@@ -54,15 +46,9 @@ const personalize = new PersonalizeMiddleware({
   skip: () => false,
 });
 
-// --- 2. Main Middleware Function ---
-
 export function middleware(req: NextRequest, ev: NextFetchEvent) {
-  /**
-   * การทำงานหลัก:
-   * 1. LocaleMiddleware จะตรวจสอบ URL
-   * 2. หากไม่มี Prefix ภาษา (เช่น /) และคุณตั้ง localePrefix: 'always' ใน routing.ts
-   * ระบบจะทำการ Redirect ไปยังภาษาเริ่มต้นทันที (เช่น /en)
-   */
+  // รันระบบ Middleware ของ Sitecore
+  // ระบบจะทำการ Redirect ไปยังภาษาเริ่มต้น (เช่น /en) ทันทีหากยังไม่มี Prefix
   return defineMiddleware(locale, multisite, redirects, personalize).exec(
     req,
     ev,
@@ -70,12 +56,9 @@ export function middleware(req: NextRequest, ev: NextFetchEvent) {
 }
 
 export const config = {
-  /*
-   * กำหนดเส้นทางที่ต้องการให้ Middleware ทำงาน
-   * ครอบคลุมหน้า Root (/) และเส้นทางอื่นๆ ทั้งหมด ยกเว้นไฟล์ระบบและ API
-   */
   matcher: [
     "/",
+    // ตรวจสอบว่า matcher ครอบคลุมเส้นทางที่ต้องการเติม Prefix ทั้งหมด
     "/((?!api/|sitemap|robots|_next/|healthz|sitecore/api/|-/|favicon.ico|sc_logo.svg).*)",
   ],
 };
