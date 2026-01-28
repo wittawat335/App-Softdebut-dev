@@ -1,15 +1,13 @@
-import { defineRouting } from 'next-intl/routing';
-import sitecoreConfig from 'sitecore.config';
+import { defineRouting } from "next-intl/routing";
+import sitecoreConfig from "sitecore.config";
 
 export const routing = defineRouting({
-  // A list of all locales that are supported
-  locales: [sitecoreConfig.defaultLanguage],
+  // 1. ระบุรหัสภาษาทั้งหมดที่ระบบรองรับ (ต้องตรงกับใน Sitecore XM Cloud)
+  locales: ["en", "th"],
 
-  // Used when no locale matches
+  // 2. ระบุภาษาเริ่มต้น (ใช้ค่าจาก config หรือใส่ 'en' ไปเลยก็ได้)
   defaultLocale: sitecoreConfig.defaultLanguage,
 
-  // No prefix is added for the default locale ("as-needed").
-  // For other configuration options, refer to the next-intl documentation:
-  // https://next-intl.dev/docs/routing/configuration
-  localePrefix: 'as-needed',
+  // 3. หัวใจสำคัญ: เปลี่ยนเป็น 'always' เพื่อบังคับให้ URL มี /en หรือ /th เสมอ
+  localePrefix: "always",
 });
