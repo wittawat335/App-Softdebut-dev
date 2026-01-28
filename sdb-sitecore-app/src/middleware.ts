@@ -1,8 +1,4 @@
-import {
-  NextResponse,
-  type NextRequest,
-  type NextFetchEvent,
-} from "next/server";
+import { type NextRequest, type NextFetchEvent } from "next/server";
 import {
   defineMiddleware,
   AppRouterMultisiteMiddleware,
@@ -15,13 +11,28 @@ import scConfig from "sitecore.config";
 import { routing } from "./i18n/routing";
 
 // --- 1. ตั้งค่า Sitecore Middlewares ---
+
 const locale = new LocaleMiddleware({
+  /**
+   * รายชื่อ Site ทั้งหมดจาก sites.json
+   */
   sites,
-  locales: routing.locales.slice(), // ดึงค่า ['en', 'th'] จาก routing.ts
+  /**
+   * รายชื่อภาษาที่รองรับ โดยดึงมาจาก src/i18n/routing.ts
+   * ปัจจุบันคือ ['en', 'th']
+   */
+  locales: routing.locales.slice(),
+  /**
+   * ตั้งค่าเป็น false เพื่อให้ Middleware ทำงานเสมอ
+   * เพื่อจัดการเรื่องการเติม Prefix ภาษาใน URL
+   */
   skip: () => false,
 });
 
 const multisite = new AppRouterMultisiteMiddleware({
+  /**
+   * รายชื่อ Site สำหรับระบุว่า URL นี้เป็นของ Site ไหน
+   */
   sites,
   ...scConfig.api.edge,
   ...scConfig.multisite,
@@ -44,33 +55,14 @@ const personalize = new PersonalizeMiddleware({
 });
 
 // --- 2. Main Middleware Function ---
+
 export function middleware(req: NextRequest, ev: NextFetchEvent) {
-  const { pathname } = req.nextUrl;
-
-  // --- ส่วน Admin Authentication ---
-  // Regex นี้ดักจับ: /admin, /en/admin, /th/admin ทั้งหมด
-  const adminRegex = /^(\/[a-z]{2})?\/admin/;
-
-  if (adminRegex.test(pathname)) {
-    // ถ้าเข้าหน้า Login ให้ผ่านไปได้เลย
-    if (pathname.includes("/admin/login")) {
-      return NextResponse.next();
-    }
-
-    // ตรวจสอบ Token
-    const token = req.cookies.get("admin_token");
-
-    // ถ้าไม่มี Token -> ดีดกลับไปหน้า Login
-    if (!token) {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
-    }
-
-    // ถ้ามี Token -> อนุญาตให้เข้าได้ (และจบการทำงานตรงนี้ ไม่ไปรัน Sitecore ต่อ)
-    return NextResponse.next();
-  }
-  // ----------------------------------
-
-  // --- ส่วน Sitecore Logic (จะทำงานเมื่อไม่ใช่หน้า Admin) ---
+  /**
+   * การทำงานหลัก:
+   * 1. LocaleMiddleware จะตรวจสอบ URL
+   * 2. หากไม่มี Prefix ภาษา (เช่น /) และคุณตั้ง localePrefix: 'always' ใน routing.ts
+   * ระบบจะทำการ Redirect ไปยังภาษาเริ่มต้นทันที (เช่น /en)
+   */
   return defineMiddleware(locale, multisite, redirects, personalize).exec(
     req,
     ev,
@@ -78,6 +70,10 @@ export function middleware(req: NextRequest, ev: NextFetchEvent) {
 }
 
 export const config = {
+  /*
+   * กำหนดเส้นทางที่ต้องการให้ Middleware ทำงาน
+   * ครอบคลุมหน้า Root (/) และเส้นทางอื่นๆ ทั้งหมด ยกเว้นไฟล์ระบบและ API
+   */
   matcher: [
     "/",
     "/((?!api/|sitemap|robots|_next/|healthz|sitecore/api/|-/|favicon.ico|sc_logo.svg).*)",
