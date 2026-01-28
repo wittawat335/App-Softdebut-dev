@@ -1,19 +1,19 @@
-import { getRequestConfig, GetRequestConfigParams } from 'next-intl/server';
-import { hasLocale } from 'next-intl';
-import { routing } from './routing';
-import client from 'src/lib/sitecore-client';
+import { getRequestConfig } from "next-intl/server";
+import { routing } from "./routing";
+import client from "src/lib/sitecore-client";
+import { hasLocale } from "next-intl";
 
-export default getRequestConfig(async ({ requestLocale }: GetRequestConfigParams) => {
-  // Provide a static locale, fetch a user setting,
-  // read from `cookies()`, `headers()`, etc.
-  // Since this function is executed during the Server Components render pass, you can call functions like cookies() and headers() to return configuration that is request-specific. https://next-intl.dev/docs/usage/configuration
-  
-  // set by the catch-all route setRequestLocale
-  // to support SSG and multisite here we expect both site and locale in the format {site}_{locale}
+export default getRequestConfig(async ({ requestLocale }) => {
+  // รับค่า Locale ที่ส่งมาจาก Next.js
   const requested = await requestLocale;
-  const [parsedSite, parsedLocale] = requested?.split('_') || [];
-  const locale = hasLocale(routing.locales, parsedLocale) ? parsedLocale : routing.defaultLocale;
+  const [parsedSite, parsedLocale] = requested?.split("_") || [];
 
+  // ตรวจสอบว่าภาษานั้นมีในระบบจริงไหม ถ้าไม่มีให้ใช้ Default
+  const locale = hasLocale(routing.locales, parsedLocale)
+    ? parsedLocale
+    : routing.defaultLocale;
+
+  // ดึง Dictionary จาก Sitecore
   const messages: Record<string, object> = {};
   messages[parsedSite] = await client.getDictionary({
     locale,
