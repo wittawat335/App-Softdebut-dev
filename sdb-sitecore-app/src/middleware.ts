@@ -47,8 +47,23 @@ const personalize = new PersonalizeMiddleware({
 });
 
 export function middleware(req: NextRequest, ev: NextFetchEvent) {
-  // รันระบบ Middleware ของ Sitecore
-  // ระบบจะทำการ Redirect ไปยังภาษาเริ่มต้น (เช่น /en) ทันทีหากยังไม่มี Prefix
+  const { pathname } = req.nextUrl;
+  const locales = ["en", "th"];
+
+  const hasLocale = locales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
+  );
+
+  const isPublicFile = /\.(.*)$/.test(pathname); 
+  const isIgnoredPath =
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/sitecore") ||
+    pathname.startsWith("/_next");
+
+  if (!hasLocale && !isPublicFile && !isIgnoredPath) {
+    return intlMiddleware(req);
+  }
+
   return defineMiddleware(locale, multisite, redirects, personalize).exec(
     req,
     ev,
@@ -58,7 +73,6 @@ export function middleware(req: NextRequest, ev: NextFetchEvent) {
 export const config = {
   matcher: [
     "/",
-    // ตรวจสอบว่า matcher ครอบคลุมเส้นทางที่ต้องการเติม Prefix ทั้งหมด
     "/((?!api/|sitemap|robots|_next/|healthz|sitecore/api/|-/|favicon.ico|sc_logo.svg).*)",
   ],
 };

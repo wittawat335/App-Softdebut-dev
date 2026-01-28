@@ -13,6 +13,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? parsedLocale
     : routing.defaultLocale;
 
+  console.log("Request Locale:", requested, "=> Using Locale:", locale);
+
   // ดึง Dictionary จาก Sitecore
   const messages: Record<string, object> = {};
   messages[parsedSite] = await client.getDictionary({
